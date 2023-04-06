@@ -2,13 +2,35 @@
 # SPDX-License-Identifier: CC0-1.0
 
 include:
-#   - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux.yml
-#   - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd.yml
-#   - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/windows.yml
-#   - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux-qt6.yml
-#   - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd-qt6.yml
-  - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/craft-appimage.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/windows.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux-qt6.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd-qt6.yml
+  # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/craft-appimage.yml
   - project: sysadmin/ci-utilities
-    ref: work/kloecker/use-project-includes
+    # ref: master
     file:
       - /gitlab-templates/craft-windows-x86-64.yml
+
+craft_windows_x86_64:
+  script:
+    # Set up craft settings and blueprint settings
+    - Run-CraftMaster --setup
+    # Get Craft itself ready
+    - Run-CraftMaster -c -i --options virtual.ignored=True --update craft
+    # Install all of our dependencies
+    - Run-CraftMaster -c --install-deps --target master $env:CI_PROJECT_NAME
+    # Build the actual application
+    - Run-CraftMaster -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    # Ensure the tools needed to conduct packaging are installed
+    - Run-CraftMaster -c -i --update nsis
+    # Package it up!
+    - Run-CraftMaster -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+    - $packageAppx = Run-CraftMaster -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
+    - if ($packageAppx -eq "True") { Run-CraftMaster -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
+    # Save our package
+    - $packageDir = Run-CraftMaster -c -q --get "packageDestinationDir()" virtual/base
+    - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
+    - cd $env:CI_PROJECT_DIR/.kde-ci-packages
+    - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item
