@@ -22,6 +22,8 @@
 #include <KActionCollection>
 #include <KConfigGroup>
 #include <KXMLGUIFactory>
+#include <KXmlGui5ConfigMigration>
+
 #include <QAction>
 #include <QMenu>
 
@@ -36,7 +38,13 @@
 #include <ktexteditor/editor.h>
 #include <ktexteditor/view.h>
 
-K_PLUGIN_FACTORY_WITH_JSON(KatePluginGDBFactory, "kategdbplugin.json", registerPlugin<KatePluginGDB>();)
+static inline void migrateKXmlGui5ConfigMigration()
+{
+    // move KF5-time user toolbar configuration
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("kategdb"), {QStringLiteral("ui.rc")});
+}
+
+K_PLUGIN_FACTORY_WITH_JSON(KatePluginGDBFactory, "kategdbplugin.json", registerPlugin<KatePluginGDB>(); migrateKXmlGui5ConfigMigration();)
 
 static const QString CONFIG_DEBUGPLUGIN{QStringLiteral("debugplugin")};
 static const QString CONFIG_DAP_CONFIG{QStringLiteral("DAPConfiguration")};

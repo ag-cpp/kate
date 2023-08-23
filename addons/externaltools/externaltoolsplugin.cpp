@@ -26,6 +26,7 @@
 #include <KConfigGroup>
 #include <KPluginFactory>
 #include <KXMLGUIFactory>
+#include <KXmlGui5ConfigMigration>
 
 #include <QClipboard>
 #include <QGuiApplication>
@@ -80,6 +81,9 @@ KateExternalToolsPlugin::~KateExternalToolsPlugin()
 
 void KateExternalToolsPlugin::migrateConfig()
 {
+    // copy KF5-time user toolbar configuration, keep old copy for 3rd-party users of KF5 plugin version
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("externaltools"), {QStringLiteral("ui.rc")}, KXmlGui5ConfigMigration::NoMigrationOptions);
+
     const QString oldFile = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, QStringLiteral("externaltools"));
 
     if (!oldFile.isEmpty()) {

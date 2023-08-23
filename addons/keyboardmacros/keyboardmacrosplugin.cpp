@@ -24,13 +24,20 @@
 
 #include <KLocalizedString>
 #include <KPluginFactory>
+#include <KXmlGui5ConfigMigration>
 
 #include <KTextEditor/Document>
 #include <KTextEditor/Editor>
 
 Q_LOGGING_CATEGORY(KM_DBG, "kate.plugin.keyboardmacros", QtWarningMsg)
 
-K_PLUGIN_FACTORY_WITH_JSON(KeyboardMacrosPluginFactory, "keyboardmacrosplugin.json", registerPlugin<KeyboardMacrosPlugin>();)
+static inline void migrateKXmlGui5ConfigMigration()
+{
+    // copy KF5-time user toolbar configuration, keep old copy for 3rd-party users of KF5 plugin version
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("keyboardmacros"), {QStringLiteral("ui.rc")}, KXmlGui5ConfigMigration::NoMigrationOptions);
+}
+
+K_PLUGIN_FACTORY_WITH_JSON(KeyboardMacrosPluginFactory, "keyboardmacrosplugin.json", registerPlugin<KeyboardMacrosPlugin>(); migrateKXmlGui5ConfigMigration();)
 
 // BEGIN Plugin creation and destruction
 

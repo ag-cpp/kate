@@ -13,6 +13,7 @@
 #include <KAboutData>
 #include <KDBusService>
 #include <KLocalizedString>
+#include <KXmlGui5ConfigMigration>
 
 // X11 startup handling
 #if __has_include(<KStartupInfo>)
@@ -567,6 +568,11 @@ int main(int argc, char **argv)
     /**
      * if we arrive here, we need to start a new kate instance!
      */
+
+    /**
+     * Pick up any user toolbar customizations and move to KF6 location
+     */
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("kate"), {QStringLiteral("kateui.rc")});
 
     /**
      * construct the real kate app object ;)

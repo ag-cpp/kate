@@ -11,6 +11,7 @@
 #include <KAboutData>
 #include <KDBusService>
 #include <KLocalizedString>
+#include <KXmlGui5ConfigMigration>
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -126,6 +127,11 @@ extern "C" Q_DECL_EXPORT int main(int argc, char **argv)
      * handle standard options
      */
     aboutData.processCommandLine(&parser);
+
+    /**
+     * Pick up any user toolbar customizations and move to KF6 location
+     */
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("kwrite"), {QStringLiteral("kateui.rc")});
 
     /**
      * construct the real kate app object ;)

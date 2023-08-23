@@ -11,8 +11,15 @@
 #include <ktexteditor/document.h>
 
 #include <KLocalizedString>
+#include <KXmlGui5ConfigMigration>
 
-K_PLUGIN_FACTORY_WITH_JSON(KateSQLFactory, "katesql.json", registerPlugin<KateSQLPlugin>();)
+static inline void migrateKXmlGui5ConfigMigration()
+{
+    // move KF5-time user toolbar configuration
+    KXmlGui5ConfigMigration::migrate(QStringLiteral("katesql"), {QStringLiteral("ui.rc")});
+}
+
+K_PLUGIN_FACTORY_WITH_JSON(KateSQLFactory, "katesql.json", registerPlugin<KateSQLPlugin>(); migrateKXmlGui5ConfigMigration();)
 
 // BEGIN KateSQLPLugin
 KateSQLPlugin::KateSQLPlugin(QObject *parent, const QList<QVariant> &)
