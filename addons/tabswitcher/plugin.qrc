@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="/kxmlgui5/tabswitcher">
+    <qresource prefix="/tabswitcher/kxmlgui6">
         <file>ui.rc</file>
     </qresource>
 </RCC>

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/kxmlgui5/kateproject">
+    <qresource prefix="/kateproject/kxmlgui6">
         <file>ui.rc</file>
     </qresource>
     <qresource prefix="/icons">

@@ -1,9 +1,9 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="/kxmlgui5/kate">
+    <qresource prefix="/kate/kxmlgui6">
         <file>kateui.rc</file>
     </qresource>
-    <qresource prefix="/kxmlgui5/kwrite">
+    <qresource prefix="/kwrite/kxmlgui6">
         <file>kateui.rc</file>
     </qresource>
     <qresource prefix="/kate">

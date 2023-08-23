@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="/kxmlgui5/katesnippets">
+    <qresource prefix="/katesnippets/kxmlgui6">
         <file>ui.rc</file>
     </qresource>
     <qresource prefix="/katesnippets">

@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="/kxmlgui5/katebuild">
+    <qresource prefix="/katebuild/kxmlgui6">
         <file>ui.rc</file>
     </qresource>
 </RCC>

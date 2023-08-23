@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource prefix="/kxmlgui5/kate_diagnosticsview">
+    <qresource prefix="/kate_diagnosticsview/kxmlgui6">
         <file>ui.rc</file>
     </qresource>
 </RCC>
