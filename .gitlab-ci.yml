@@ -1,19 +1,65 @@
 # SPDX-FileCopyrightText: None
 # SPDX-License-Identifier: CC0-1.0
 
-include:
+# include:
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux.yml
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd.yml
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/windows.yml
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/linux-qt6.yml
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/freebsd-qt6.yml
   # - https://invent.kde.org/sysadmin/ci-utilities/raw/master/gitlab-templates/craft-appimage.yml
-  - project: sysadmin/ci-utilities
-    # ref: master
-    file:
-      - /gitlab-templates/craft-windows-x86-64.yml
+  # - project: sysadmin/ci-utilities
+  #   ref: master
+  #   file:
+  #     - /gitlab-templates/craft-windows-x86-64.yml
 
-craft_windows_x86_64:
+# craft_windows_x86_64:
+#   script:
+#     # Set up craft settings and blueprint settings
+#     - Run-CraftMaster --setup
+#     # Get Craft itself ready
+#     - Run-CraftMaster -c -i --options virtual.ignored=True --update craft
+#     # Install all of our dependencies
+#     - Run-CraftMaster -c --install-deps --target master $env:CI_PROJECT_NAME
+#     # Build the actual application
+#     - Run-CraftMaster -c --no-cache --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+#     # Ensure the tools needed to conduct packaging are installed
+#     - Run-CraftMaster -c -i --update nsis
+#     # Package it up!
+#     - Run-CraftMaster -c --package --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME
+#     - $packageAppx = Run-CraftMaster -c --get subinfo.options.dynamic.packageAppx $env:CI_PROJECT_NAME
+#     - if ($packageAppx -eq "True") { Run-CraftMaster -c --package --options "[Packager]PackageType=AppxPackager" --target master --src-dir $env:CI_PROJECT_DIR/src/ $env:CI_PROJECT_NAME }
+#     # Save our package
+#     - $packageDir = Run-CraftMaster -c -q --get "packageDestinationDir()" virtual/base
+#     - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
+#     - cd $env:CI_PROJECT_DIR/.kde-ci-packages
+#     - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item
+
+.craft_windows_base:
+  stage: deploy
+  when: manual
+  image: invent-registry.kde.org/sysadmin/ci-images/windows-msvc2019-qt515:latest
+  #needs: ["windows_qt515"]
+  tags:
+    - Windows
+  variables:
+    PYTHONUTF8: 1
+    GIT_STRATEGY: none
+    # KDECI_CRAFT_PLATFORM is specified in the derived jobs
+    KDECI_CRAFT_CACHE: C:/Gitlab/Craft/download/
+    KDECI_CRAFT_CONFIG: ci-utilities/craft/qt5/CraftConfig.ini
+    KDECI_CRAFT_PROJECT_CONFIG: $CI_PROJECT_DIR/src/.craft.ini
+  interruptible: true
+  before_script:
+    - git clone if ($env:CI_MERGE_REQUEST_SOURCE_PROJECT_URL) { $env:CI_MERGE_REQUEST_SOURCE_PROJECT_URL } else { $env:CI_REPOSITORY_URL } --branch=$env:CI_COMMIT_REF_NAME src/
+    # Create empty .craft.ini if none exists
+    - if (!(Test-Path $env:KDECI_CRAFT_PROJECT_CONFIG)) { New-Item $env:KDECI_CRAFT_PROJECT_CONFIG -ItemType file }
+    - cd C:\Gitlab\Craft\
+    - Get-ChildItem C:\Gitlab\Craft\ | Remove-Item -Recurse -Force
+    - git clone https://invent.kde.org/packaging/craftmaster --branch=master
+    - git clone https://invent.kde.org/sysadmin/ci-utilities
+    # Define a short cut for the lengthy CraftMaster command line
+    - function Run-CraftMaster { python craftmaster/CraftMaster.py --config $env:KDECI_CRAFT_CONFIG --config-override $env:KDECI_CRAFT_PROJECT_CONFIG --target $env:KDECI_CRAFT_PLATFORM $args }
   script:
     # Set up craft settings and blueprint settings
     - Run-CraftMaster --setup
@@ -34,3 +80,14 @@ craft_windows_x86_64:
     - mkdir $env:CI_PROJECT_DIR/.kde-ci-packages
     - cd $env:CI_PROJECT_DIR/.kde-ci-packages
     - Get-ChildItem -Path $packageDir -Recurse -Include *.appx, *.appxupload, *.exe, *.7z, *.sha256 | Copy-Item
+
+craft_windows_x86_64:
+  extends: .craft_windows_base
+  variables:
+    KDECI_CRAFT_PLATFORM: windows-msvc2019_64-cl
+  artifacts:
+    expire_in: 3 days
+    when: on_success
+    expose_as: "Windows"
+    paths:
+     - ".kde-ci-packages/"
