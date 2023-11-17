@@ -1065,7 +1065,7 @@ void GitWidget::createStashDialog(StashMode m, const QString &gitPath)
         d.workingDir = m_activeGitDirPath;
         Utils::showDiff(r, d, mainWindow());
     });
-    connect(stashDialog, &StashDialog::done, this, [this, stashDialog] {
+    connect(stashDialog, &StashDialog::stashDone, this, [this, stashDialog] {
         updateStatus();
         stashDialog->deleteLater();
     });

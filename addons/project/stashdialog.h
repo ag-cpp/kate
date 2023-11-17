@@ -49,7 +49,7 @@ public:
     void openDialog(StashMode mode);
 
     Q_SIGNAL void message(const QString &msg, bool warn);
-    Q_SIGNAL void done();
+    Q_SIGNAL void stashDone();
     Q_SIGNAL void showStashDiff(const QByteArray &diff);
 
 protected Q_SLOTS:

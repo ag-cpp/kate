@@ -268,7 +268,7 @@ private:
 Q_DECLARE_METATYPE(QPointer<KTextEditor::Document>)
 
 KateQuickOpen::KateQuickOpen(KateMainWindow *mainWindow)
-    : QMenu(mainWindow)
+    : QDialog(mainWindow, Qt::Tool | Qt::FramelessWindowHint)
     , m_mainWindow(mainWindow)
 {
     // ensure the components have some proper frame

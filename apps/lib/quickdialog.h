@@ -5,8 +5,8 @@
 */
 #pragma once
 
+#include <QDialog>
 #include <QLineEdit>
-#include <QMenu>
 #include <QPointer>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
@@ -46,7 +46,7 @@ protected:
     int m_displayRole = Qt::DisplayRole;
 };
 
-class KATE_PRIVATE_EXPORT HUDDialog : public QMenu
+class KATE_PRIVATE_EXPORT HUDDialog : public QDialog
 {
     Q_OBJECT
 public:

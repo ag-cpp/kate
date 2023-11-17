@@ -114,7 +114,7 @@ void HUDStyleDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 }
 
 HUDDialog::HUDDialog(QWidget *parent, QWidget *mainWindow)
-    : QMenu(parent)
+    : QDialog(parent, Qt::Tool | Qt::FramelessWindowHint)
     , m_mainWindow(mainWindow)
     , m_model(new QStringListModel(this))
     , m_proxy(new FuzzyFilterModel(this))

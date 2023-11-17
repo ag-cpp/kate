@@ -143,7 +143,7 @@ void StashDialog::stash(bool keepIndex, bool includeUntracked)
         } else {
             Q_EMIT message(i18n("Changes stashed successfully."), false);
         }
-        Q_EMIT done();
+        Q_EMIT stashDone();
         git->deleteLater();
     });
     startHostProcess(*git, QProcess::ReadOnly);
@@ -191,7 +191,7 @@ void StashDialog::popStash(const QString &index, const QString &command)
                 Q_EMIT message(i18n("Stash popped successfully."), false);
             }
         }
-        Q_EMIT done();
+        Q_EMIT stashDone();
         git->deleteLater();
     });
     startHostProcess(*git, QProcess::ReadOnly);
@@ -221,7 +221,7 @@ void StashDialog::showStash(const QString &index)
         } else {
             Q_EMIT showStashDiff(git->readAllStandardOutput());
         }
-        Q_EMIT done();
+        Q_EMIT stashDone();
         git->deleteLater();
     });
 

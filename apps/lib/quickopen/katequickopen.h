@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <QMenu>
+#include <QDialog>
 
 #include "katequickopenlineedit.h"
 
@@ -23,7 +23,7 @@ enum KateQuickOpenModelList : int;
 
 class QuickOpenFilterProxyModel;
 
-class KateQuickOpen : public QMenu
+class KateQuickOpen : public QDialog
 {
     Q_OBJECT
 public:
