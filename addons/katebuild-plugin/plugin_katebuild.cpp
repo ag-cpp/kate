@@ -934,7 +934,8 @@ void KateBuildView::slotLoadCMakeTargets()
     }
 
     QCMakeFileApi cmakeFA(cmakeFile, false);
-    if (!cmakeFA.haveKateReplyFiles()) {
+    const QString compileCommandsFile = cmakeFA.getBuildDir() + QStringLiteral("/compile_commands.json");
+    if (!cmakeFA.haveKateReplyFiles() || !QFile::exists(compileCommandsFile)) {
 
         QStringList commandLine = cmakeFA.getCMakeRequestCommandLine();
         if (!isCommandLineAllowed(commandLine)) {
@@ -962,6 +963,8 @@ void KateBuildView::slotLoadCMakeTargets()
 
         createCMakeTargetSet(setIndex, projectName, cmakeFA, config);
     }
+
+    QFile::copy(compileCommandsFile, cmakeFA.getSourceDir() + QStringLiteral("/compile_commands.json"));
 
 }
 
