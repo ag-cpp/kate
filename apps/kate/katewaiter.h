@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef WITH_DBUS
+
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -31,3 +33,5 @@ private:
     QStringList m_tokens;
     QDBusServiceWatcher m_watcher;
 };
+
+#endif

@@ -5,6 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
+#ifdef WITH_DBUS
+
 #include "katewaiter.h"
 
 KateWaiter::KateWaiter(const QString &service, const QStringList &tokens)
@@ -34,3 +36,5 @@ void KateWaiter::serviceOwnerChanged(const QString &, const QString &, const QSt
 }
 
 #include "moc_katewaiter.cpp"
+
+#endif
