@@ -11,8 +11,11 @@
 #include "katewaiter.h"
 
 #include <KAboutData>
-#include <KDBusService>
 #include <KLocalizedString>
+
+#ifdef WITH_DBUS
+#include <KDBusService>
+#endif
 
 // X11 startup handling
 #if __has_include(<KStartupInfo>)
@@ -232,6 +235,7 @@ int main(int argc, char **argv)
      * allows for reuse of running Kate instances
      * we have some env var to forbid this for easier testing of the single application code paths: KATE_SKIP_DBUS
      */
+#ifdef WITH_DBUS
     if (QDBusConnectionInterface *const sessionBusInterface = QDBusConnection::sessionBus().interface();
         sessionBusInterface && qEnvironmentVariableIsEmpty("KATE_SKIP_DBUS")) {
         /**
@@ -457,39 +461,40 @@ int main(int argc, char **argv)
             // this will wait until exiting is emitted by the used instance, if wanted...
             return needToBlock ? app.exec() : 0;
         }
-    }
+    } else
+#endif
 
-    /**
-     * if we had no DBus session bus, we can try to use the SingleApplication communication.
-     * only try to reuse existing kate instances if not already forbidden by arguments
-     */
-    else if (!force_new && app.isSecondary()) {
         /**
-         * construct one big message with all urls to open
-         * later we will add additional data to this
+         * if we had no DBus session bus, we can try to use the SingleApplication communication.
+         * only try to reuse existing kate instances if not already forbidden by arguments
          */
-        QVariantMap message;
-        QVariantList messageUrls;
-        for (const QString &url : urls) {
+        if (!force_new && app.isSecondary()) {
             /**
-             * get url info and pack them into the message as extra element in urls list
+             * construct one big message with all urls to open
+             * later we will add additional data to this
              */
-            UrlInfo info(url);
-            QVariantMap urlMessagePart;
-            urlMessagePart[QLatin1String("url")] = info.url;
-            urlMessagePart[QLatin1String("line")] = info.cursor.line();
-            urlMessagePart[QLatin1String("column")] = info.cursor.column();
-            messageUrls.append(urlMessagePart);
-        }
-        message[QLatin1String("urls")] = messageUrls;
+            QVariantMap message;
+            QVariantList messageUrls;
+            for (const QString &url : urls) {
+                /**
+                 * get url info and pack them into the message as extra element in urls list
+                 */
+                UrlInfo info(url);
+                QVariantMap urlMessagePart;
+                urlMessagePart[QLatin1String("url")] = info.url;
+                urlMessagePart[QLatin1String("line")] = info.cursor.line();
+                urlMessagePart[QLatin1String("column")] = info.cursor.column();
+                messageUrls.append(urlMessagePart);
+            }
+            message[QLatin1String("urls")] = messageUrls;
 
-        /**
-         * try to send message, return success
-         */
-        return !app.sendMessage(QJsonDocument::fromVariant(QVariant(message)).toJson(),
-                                1000,
-                                needToBlock ? SingleApplication::BlockUntilPrimaryExit : SingleApplication::NonBlocking);
-    }
+            /**
+             * try to send message, return success
+             */
+            return !app.sendMessage(QJsonDocument::fromVariant(QVariant(message)).toJson(),
+                                    1000,
+                                    needToBlock ? SingleApplication::BlockUntilPrimaryExit : SingleApplication::NonBlocking);
+        }
 
     /**
      * if we arrive here, we need to start a new kate instance!
@@ -514,7 +519,9 @@ int main(int argc, char **argv)
     /**
      * finally register this kate instance for dbus, don't die if no dbus is around!
      */
+#ifdef WITH_DBUS
     const KDBusService dbusService(KDBusService::Multiple | KDBusService::NoExitOnFailure);
+#endif
 
     /**
      * listen to single application messages in any case

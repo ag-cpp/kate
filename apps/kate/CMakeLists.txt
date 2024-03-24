@@ -1,7 +1,4 @@
 # Kate application
-
-find_package(KF6DBusAddons ${KF5_DEP_VERSION} REQUIRED)
-
 add_executable(kate-bin
     main.cpp
     data/kate.qrc
@@ -11,7 +8,7 @@ add_executable(kate-bin
     # single application handing for the non-dbus case
     SingleApplication/singleapplication.cpp
     SingleApplication/singleapplication_p.cpp)
-target_link_libraries(kate-bin PRIVATE kateprivate PUBLIC KF6::DBusAddons)
+target_link_libraries(kate-bin PRIVATE kateprivate)
 
 # X11 startup handling
 if (UNIX AND NOT APPLE)
