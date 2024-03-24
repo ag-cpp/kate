@@ -9,8 +9,11 @@
 #include "kateapp.h"
 
 #include <KAboutData>
-#include <KDBusService>
 #include <KLocalizedString>
+
+#ifdef WITH_DBUS
+#include <KDBusService>
+#endif
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -149,7 +152,9 @@ extern "C" Q_DECL_EXPORT int main(int argc, char **argv)
     /**
      * finally register this kwrite instance for dbus, don't die if no dbus is around!
      */
+#ifdef WITH_DBUS
     const KDBusService dbusService(KDBusService::Multiple | KDBusService::NoExitOnFailure);
+#endif
 
     /**
      * Run the event loop
