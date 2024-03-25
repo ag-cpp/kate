@@ -62,6 +62,7 @@
 #include <KPluginFactory>
 #include <KXMLGUIFactory>
 
+#include <kateapp.h>
 #include <kterminallauncherjob.h>
 #include <ktexteditor_utils.h>
 
@@ -513,6 +514,7 @@ void KateBuildView::readSessionConfig(const KConfigGroup &cg)
     m_targetsUi->targetsView->setCurrentIndex(cmdIndex);
 
     m_targetsUi->updateTargetsButtonStates();
+
 }
 
 /******************************************************************/
@@ -933,6 +935,13 @@ void KateBuildView::slotLoadCMakeTargets()
         return;
     }
 
+    loadCMakeTargets(cmakeFile);
+}
+
+
+/******************************************************************/
+void KateBuildView::loadCMakeTargets(const QString& cmakeFile)
+{
     QCMakeFileApi cmakeFA(cmakeFile, false);
     if (cmakeFA.getCMakeExecutable().isEmpty()) {
         KMessageBox::error(nullptr, i18n("Cannot load targets, the file %1 does not contain a proper CMAKE_COMMAND entry !", cmakeFile));
