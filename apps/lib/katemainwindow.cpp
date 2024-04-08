@@ -160,8 +160,6 @@ KateMainWindow::KateMainWindow(KConfig *sconfig, const QString &sgroup, bool use
 
     finishRestore();
 
-    m_fileOpenRecent->loadEntries(KConfigGroup(sconfig, QStringLiteral("Recent Files")));
-
     setAcceptDrops(true);
 
     connect(KateApp::self()->sessionManager(), &KateSessionManager::sessionChanged, this, [this] {
@@ -347,6 +345,12 @@ void KateMainWindow::setupActions()
     m_fileOpenRecent->setMaxItems(KateConfigDialog::recentFilesMaxCount());
     actionCollection()->addAction(m_fileOpenRecent->objectName(), m_fileOpenRecent);
     m_fileOpenRecent->setWhatsThis(i18n("This lists files which you have opened recently, and allows you to easily open them again."));
+    // Loading recent files is slow so do it on demand
+    Q_ASSERT(m_fileOpenRecent->menu());
+    connect(m_fileOpenRecent->menu(), &QMenu::aboutToShow, this, [this] {
+        auto g = KConfigGroup(KSharedConfig::openConfig(), QStringLiteral("Recent Files"));
+        m_fileOpenRecent->loadEntries(g);
+    });
 
     a = actionCollection()->addAction(QStringLiteral("file_save_all"));
     a->setIcon(QIcon::fromTheme(QStringLiteral("document-save-all")));
