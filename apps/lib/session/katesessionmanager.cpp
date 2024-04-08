@@ -234,17 +234,11 @@ void KateSessionManager::loadSession(const KateSession::Ptr &session) const
                 delete KateApp::self()->mainWindow(KateApp::self()->mainWindowsCount() - 1);
             }
         }
-    } else {
-        // load recent files for all existing windows, see bug 408499
-        for (int i = 0; i < KateApp::self()->mainWindowsCount(); ++i) {
-            KateApp::self()->mainWindow(i)->loadOpenRecent(cfg);
-        }
     }
 
     // ensure we have at least one window, always! load recent files for it, too, see bug 408499
     if (KateApp::self()->mainWindowsCount() == 0) {
-        auto w = KateApp::self()->newMainWindow();
-        w->loadOpenRecent(cfg);
+        KateApp::self()->newMainWindow();
     }
 
     if (delete_cfg) {

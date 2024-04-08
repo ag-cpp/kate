@@ -125,7 +125,6 @@ public:
     void saveProperties(KConfigGroup &config, bool includeViewConfig);
 
     void saveOpenRecent(KConfig *config);
-    void loadOpenRecent(const KConfig *config);
 
 public:
     bool queryClose_internal(KTextEditor::Document *doc = nullptr, KateMainWindow *win = nullptr);

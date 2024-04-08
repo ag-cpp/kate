@@ -1298,18 +1298,12 @@ void KateMainWindow::readProperties(const KConfigGroup &config)
 
     finishRestore();
 
-    loadOpenRecent(config.config());
     m_viewManager->restoreViewConfiguration(config);
 }
 
 void KateMainWindow::saveOpenRecent(KConfig *config)
 {
     m_fileOpenRecent->saveEntries(KConfigGroup(config, QStringLiteral("Recent Files")));
-}
-
-void KateMainWindow::loadOpenRecent(const KConfig *config)
-{
-    m_fileOpenRecent->loadEntries(KConfigGroup(config, QStringLiteral("Recent Files")));
 }
 
 void KateMainWindow::saveGlobalProperties(KConfig *sessionConfig)
